@@ -6,6 +6,10 @@
         locateFile: filename => `https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.8.0/${filename}`
     }
     let dateTime = () => new Date().toDateString() + ":" + new Date().getHours() + ":" + new Date().getMinutes() + ":" + new Date().getSeconds();
+    let runQuery = () => {console.log('Not ready to run yet.')};
+    let enableRunButton = () => {
+        document.getElementById('runButton').disabled = false;
+    }
 
     console.log(`${dateTime()}: Initialising...` );
     const getData = async () => {
@@ -31,18 +35,24 @@
 
             console.log(`${dateTime()}: Inserted ${data.results.length} people` );
 
-            // Prepare a statement
-            const stmt = db.prepare("SELECT * FROM people");
-            while(stmt.step()) { //
-                const row = stmt.getAsObject();
-                console.log('Here is a row: ' + JSON.stringify(row));
-            }
+            runQuery = (query) => {
+                console.log(`${dateTime()}: Running query: ${query}` );
+
+                // Prepare a statement
+                const stmt = db.prepare(query);
+                while(stmt.step()) { //
+                    const row = stmt.getAsObject();
+                    console.log('Here is a row: ' + JSON.stringify(row));
+                }
+            };
+
         });
     }
     getData();
 
 </script>
 <body>
-Output is in Javascript console
+<textarea id="query">SELECT * FROM people</textarea>
+<input id="runButton" type="button" value="Run" onclick="runQuery(document.getElementById('query').value)" />
 </body>
 </html>
