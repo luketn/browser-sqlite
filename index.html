@@ -36,8 +36,6 @@
             console.log(`${dateTime()}: Inserted ${data.results.length} people` );
 
             runQuery = (query) => {
-                console.log(`${dateTime()}: Running query: ${query}` );
-
                 // Prepare a statement
                 const stmt = db.prepare(query);
                 let response = [];
@@ -45,7 +43,6 @@
                     const row = stmt.getAsObject();
                     response.push(row);
                 }
-                console.log(response);
                 document.getElementById('output').innerHTML = JSON.stringify(response, null, 2);
             };
 
@@ -63,7 +60,7 @@
 <script>
 function add100000() {
 for (let i = 0; i < 100000; i++) {
-runQuery('INSERT INTO people VALUES (?,100,"n/a")', "person"+Math.random());
+db.run('INSERT INTO people VALUES (?,100,"n/a")', "person"+Math.random());
 }
 }
 </script>
