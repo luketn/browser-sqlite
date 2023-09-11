@@ -40,10 +40,12 @@
 
                 // Prepare a statement
                 const stmt = db.prepare(query);
+                let response = [];
                 while(stmt.step()) { //
                     const row = stmt.getAsObject();
-                    console.log('Here is a row: ' + JSON.stringify(row));
+                    response.push(row);
                 }
+                console.log(response);
             };
 
         });
