@@ -10,6 +10,7 @@
     let enableRunButton = () => {
         document.getElementById('runButton').disabled = false;
     }
+let db;
 
     console.log(`${dateTime()}: Initialising...` );
     const getData = async () => {
@@ -23,7 +24,7 @@
             console.log(`${dateTime()}: SQL is loaded`);
 
             //Create the database
-            const db = new SQL.Database();
+            db = new SQL.Database();
 
             // Run a query without reading the results
             db.run("CREATE TABLE people (name char, height int, gender char);");
