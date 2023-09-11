@@ -59,6 +59,15 @@
 <br/>
 <input id="runButton" type="button" value="Run" onclick="runQuery(document.getElementById('query').value)" />
 <br/>
+<input id="addButton" type="button" value="Add 100000" onclick="add100000()" />
+<script>
+function add100000() {
+for (let i = 0; i < 100000; i++) {
+runQuery('INSERT INTO people VALUES (?,100,"n/a")', "person"+Math.random());
+}
+}
+</script>
+<br/>
 <pre id="output" style="background-color: #EBECE4; "></pre>
 </body>
 </html>
