@@ -46,6 +46,7 @@
                     response.push(row);
                 }
                 console.log(response);
+                document.getElementById('output').innerHTML = JSON.stringify(response, null, 2);
             };
 
         });
@@ -54,7 +55,10 @@
 
 </script>
 <body>
-<textarea id="query">SELECT * FROM people</textarea>
+<textarea id="query" style="height: 240px; width: 640px;">SELECT * FROM people</textarea>
+<br/>
 <input id="runButton" type="button" value="Run" onclick="runQuery(document.getElementById('query').value)" />
+<br/>
+<pre id="output" style="background-color: #EBECE4; "></pre>
 </body>
 </html>
