@@ -1,27 +1,45 @@
 <meta charset="utf8" />
 <html>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.8.0/sql-wasm.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Faker/3.1.0/faker.min.js"></script>
+
+<body>
+<textarea id="query" style="height: 240px; width: 640px;" onkeydown="return handleKeydown(event)">
+SELECT * FROM people
+WHERE gender = 'male'
+AND height > 100
+LIMIT 100
+</textarea>
+<br/>
+<input id="runButton" type="button" value="Run" onclick="runQuery(document.getElementById('query').value)" />
+<br/>
+<input id="addButton" type="button" value="Add 100000" onclick="add100000()" />
+<br/>
+<pre id="output" style="background-color: #EBECE4; "></pre>
 <script>
     config = {
         locateFile: filename => `https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.8.0/${filename}`
     }
     let dateTime = () => new Date().toDateString() + ":" + new Date().getHours() + ":" + new Date().getMinutes() + ":" + new Date().getSeconds();
-    let runQuery = () => {console.log('Not ready to run yet.')};
-    let enableRunButton = () => {
-        document.getElementById('runButton').disabled = false;
-    }
-let db;
+    let runQuery = () => {setOutput('Not ready to run yet.')};
 
-    console.log(`${dateTime()}: Initialising...` );
+    let db;
+
+    setOutput(`${dateTime()}: Initialising...` );
+
+    function setOutput(value) {
+        document.getElementById('output').innerHTML = value;
+    }
+
     const getData = async () => {
         let response = await fetch('https://swapi.dev/api/people');
         let data = await response.json();
-        console.log(`${dateTime()}: Loaded ${data.count} people` );
+        setOutput(`${dateTime()}: Loaded ${data.count} people` );
 
         // The `initSqlJs` function is globally provided by all of the main dist files if loaded in the browser.
         // We must specify this locateFile function if we are loading a wasm file from anywhere other than the current html page's folder.
         initSqlJs(config).then(function(SQL){
-            console.log(`${dateTime()}: SQL is loaded`);
+            setOutput(`${dateTime()}: SQL is loaded`);
 
             //Create the database
             db = new SQL.Database();
@@ -34,7 +52,7 @@ let db;
                 db.run("INSERT INTO people VALUES (?,?,?)", [person.name, person.height, person.gender]);
             }
 
-            console.log(`${dateTime()}: Inserted ${data.results.length} people` );
+            setOutput(`${dateTime()}: Inserted ${data.results.length} people from the star wars universe.` );
 
             runQuery = (query) => {
                 // Prepare a statement
@@ -44,28 +62,35 @@ let db;
                     const row = stmt.getAsObject();
                     response.push(row);
                 }
-                document.getElementById('output').innerHTML = JSON.stringify(response, null, 2);
+                setOutput(JSON.stringify(response, null, 2));
             };
 
         });
     }
     getData();
 
+    function handleKeydown(event) {
+        if (event.key === 'Enter' && !event.shiftKey) {
+            runQuery(document.getElementById('query').value);
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    function add100000() {
+        setOutput(`${dateTime()}: Creating and inserting 100000 fake people...` );
+        document.getElementById('addButton').disabled = true;
+        for (let i = 0; i < 100000; i++) {
+            const name = `${faker.name.firstName()} ${faker.name.lastName()}`;
+            const height = faker.random.number({min: 90, max: 250});
+            const gender = faker.random.boolean() ? "male" : "female";
+
+            db.run('INSERT INTO people VALUES (?,?,?)', [name, height, gender]);
+        }
+        document.getElementById('addButton').disabled = false;
+        setOutput(`${dateTime()}: Inserted 100000 fake people.` );
+    }
 </script>
-<body>
-<textarea id="query" style="height: 240px; width: 640px;">SELECT * FROM people</textarea>
-<br/>
-<input id="runButton" type="button" value="Run" onclick="runQuery(document.getElementById('query').value)" />
-<br/>
-<input id="addButton" type="button" value="Add 100000" onclick="add100000()" />
-<script>
-function add100000() {
-for (let i = 0; i < 100000; i++) {
-db.run('INSERT INTO people VALUES (?,100,"n/a")', "person"+Math.random());
-}
-}
-</script>
-<br/>
-<pre id="output" style="background-color: #EBECE4; "></pre>
 </body>
 </html>
